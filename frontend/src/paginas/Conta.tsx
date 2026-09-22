@@ -4,10 +4,23 @@ import Cartao from "../componentes/Cartao";
 import { useAuth } from "../contexto/Auth";
 
 export default function Conta() {
-  const { usuario } = useAuth();
+  const { usuario, definirUsuario } = useAuth();
+  const [nome, setNome] = useState(usuario?.nome ?? "");
   const [senhaAtual, setSenhaAtual] = useState("");
   const [senhaNova, setSenhaNova] = useState("");
   const [aviso, setAviso] = useState<{ tipo: "ok" | "erro"; texto: string } | null>(null);
+
+  async function salvarNome(evento: FormEvent) {
+    evento.preventDefault();
+    try {
+      const atualizado = await api.alterarNome(nome);
+      definirUsuario(atualizado);
+      setNome(atualizado.nome ?? "");
+      setAviso({ tipo: "ok", texto: "Nome salvo." });
+    } catch (e) {
+      setAviso({ tipo: "erro", texto: mensagemDeErro(e) });
+    }
+  }
 
   async function trocarSenha(evento: FormEvent) {
     evento.preventDefault();
@@ -47,6 +60,31 @@ export default function Conta() {
           {aviso.texto}
         </p>
       )}
+
+      <Cartao titulo="Nome">
+        <form onSubmit={salvarNome} className="space-y-3">
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-slate-700">
+              Exibido no painel e no CSV exportado
+            </span>
+            <input
+              type="text"
+              autoComplete="name"
+              required
+              maxLength={100}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className={campo}
+            />
+          </label>
+          <button
+            type="submit"
+            className="min-h-11 rounded-lg bg-emerald-600 px-5 font-medium text-white hover:bg-emerald-700"
+          >
+            Salvar nome
+          </button>
+        </form>
+      </Cartao>
 
       <Cartao titulo="Trocar senha">
         <form onSubmit={trocarSenha} className="space-y-3">

@@ -11,6 +11,7 @@ from app.security import gerar_hash_senha
 
 EMAIL = "teste@exemplo.com"
 SENHA = "senha-segura-123"
+NOME = "Maria Silva"
 
 
 @pytest.fixture
@@ -33,8 +34,10 @@ def cliente(db: Session):
     app.dependency_overrides.clear()
 
 
-def criar_usuario(db: Session, email: str = EMAIL, senha: str = SENHA) -> Usuario:
-    usuario = Usuario(email=email, senha_hash=gerar_hash_senha(senha))
+def criar_usuario(
+    db: Session, email: str = EMAIL, senha: str = SENHA, nome: str | None = NOME
+) -> Usuario:
+    usuario = Usuario(email=email, nome=nome, senha_hash=gerar_hash_senha(senha))
     db.add(usuario)
     db.commit()
     return usuario

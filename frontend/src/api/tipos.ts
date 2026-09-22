@@ -3,6 +3,7 @@ export type Faixa = "hipo_grave" | "hipo" | "alvo" | "alto" | "muito_alto";
 export interface Usuario {
   id: number;
   email: string;
+  nome: string | null;
 }
 
 export interface Medicao {

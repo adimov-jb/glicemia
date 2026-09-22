@@ -21,11 +21,13 @@ def exportar_csv(
     buffer = io.StringIO()
     # Ponto e vírgula: separador que o Excel em português reconhece.
     escritor = csv.writer(buffer, delimiter=";")
-    escritor.writerow(["data", "hora", "glicemia_mg_dl", "faixa"])
+    escritor.writerow(["nome", "data", "hora", "glicemia_mg_dl", "faixa"])
+    nome = usuario.nome or ""
     for medicao in medicoes_do_periodo(db, usuario.id, dias):
         local = para_utc(medicao.data_hora).astimezone(fuso)
         escritor.writerow(
             [
+                nome,
                 local.strftime("%d/%m/%Y"),
                 local.strftime("%H:%M"),
                 medicao.valor,

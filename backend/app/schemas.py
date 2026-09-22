@@ -16,6 +16,19 @@ class UsuarioSaida(BaseModel):
 
     id: int
     email: str
+    nome: str | None
+
+
+class NomeEntrada(BaseModel):
+    nome: str = Field(max_length=100)
+
+    @field_validator("nome")
+    @classmethod
+    def exigir_nome(cls, nome: str) -> str:
+        nome = nome.strip()
+        if not nome:
+            raise ValueError("Informe o nome")
+        return nome
 
 
 class TrocaSenhaEntrada(BaseModel):

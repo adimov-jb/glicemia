@@ -17,6 +17,11 @@ from app.security import gerar_hash_senha
 
 def criar_usuario(email: str) -> None:
     email = email.strip().lower()
+    nome = input("Nome: ").strip()
+    if not nome:
+        sys.exit("Informe o nome.")
+    if len(nome) > 100:
+        sys.exit("Nome muito longo (máx. 100 caracteres).")
     senha = getpass.getpass("Senha (mín. 8 caracteres): ")
     if len(senha) < 8:
         sys.exit("Senha muito curta.")
@@ -26,7 +31,7 @@ def criar_usuario(email: str) -> None:
     with SessionLocal() as db:
         if db.scalar(select(Usuario).where(Usuario.email == email)):
             sys.exit(f"Já existe um usuário com o e-mail {email}.")
-        db.add(Usuario(email=email, senha_hash=gerar_hash_senha(senha)))
+        db.add(Usuario(email=email, nome=nome, senha_hash=gerar_hash_senha(senha)))
         db.commit()
     print(f"Usuário {email} criado.")
 

@@ -96,8 +96,31 @@ def test_exportar_csv(cliente_logado: TestClient):
     resposta = cliente_logado.get("/api/exportar/csv")
     assert resposta.status_code == 200
     linhas = resposta.content.decode("utf-8-sig").strip().splitlines()
-    assert linhas[0] == "data;hora;glicemia_mg_dl;faixa"
+    assert linhas[0] == "nome;data;hora;glicemia_mg_dl;faixa"
+    assert linhas[1].startswith("Maria Silva;")
     assert linhas[1].endswith(";260;Muito alto")
+
+
+def test_me_retorna_nome(cliente_logado: TestClient):
+    assert cliente_logado.get("/api/auth/me").json()["nome"] == "Maria Silva"
+
+
+def test_alterar_nome(cliente_logado: TestClient):
+    resposta = cliente_logado.put("/api/conta/nome", json={"nome": "  Ana Souza  "})
+    assert resposta.status_code == 200
+    assert resposta.json()["nome"] == "Ana Souza"
+    assert cliente_logado.get("/api/auth/me").json()["nome"] == "Ana Souza"
+
+    assert cliente_logado.put("/api/conta/nome", json={"nome": "   "}).status_code == 422
+    assert cliente_logado.put("/api/conta/nome", json={"nome": "x" * 101}).status_code == 422
+
+
+def test_exportar_csv_sem_nome(cliente: TestClient, db: Session):
+    criar_usuario(db, email="semnome@exemplo.com", senha="senha-segura-123", nome=None)
+    cliente.post("/api/auth/login", json={"email": "semnome@exemplo.com", "senha": "senha-segura-123"})
+    cliente.post("/api/medicoes", json={"valor": 100, "data_hora": agora_menos(hours=1)})
+    linhas = cliente.get("/api/exportar/csv").content.decode("utf-8-sig").strip().splitlines()
+    assert linhas[1].startswith(";")
 
 
 def test_apagar_todos_os_dados(cliente_logado: TestClient):

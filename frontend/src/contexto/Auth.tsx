@@ -7,6 +7,8 @@ interface ContextoAuth {
   carregando: boolean;
   entrar: (email: string, senha: string) => Promise<void>;
   sair: () => Promise<void>;
+  /** Atualiza os dados do usuário logado (ex.: após trocar o nome). */
+  definirUsuario: (usuario: Usuario) => void;
 }
 
 const Contexto = createContext<ContextoAuth | null>(null);
@@ -35,7 +37,7 @@ export function ProvedorAuth({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Contexto.Provider value={{ usuario, carregando, entrar, sair }}>{children}</Contexto.Provider>
+    <Contexto.Provider value={{ usuario, carregando, entrar, sair, definirUsuario: setUsuario }}>{children}</Contexto.Provider>
   );
 }
 

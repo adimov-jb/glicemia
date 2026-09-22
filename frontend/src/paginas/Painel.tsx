@@ -7,6 +7,7 @@ import FormMedicao from "../componentes/FormMedicao";
 import GraficoGlicemia from "../componentes/GraficoGlicemia";
 import ListaMedicoes from "../componentes/ListaMedicoes";
 import SeletorPeriodo from "../componentes/SeletorPeriodo";
+import { useAuth } from "../contexto/Auth";
 import { ALVO_MAX, ALVO_MIN } from "../lib/faixas";
 import { formatarNumero, inicioDoPeriodo } from "../lib/formato";
 
@@ -24,6 +25,7 @@ function Indicador({ titulo, valor, detalhe }: { titulo: string; valor: string; 
 }
 
 export default function Painel() {
+  const { usuario } = useAuth();
   const [dias, setDias] = useState<(typeof PERIODOS)[number]>(14);
   const [estatisticas, setEstatisticas] = useState<Estatisticas | null>(null);
   const [medicoes, setMedicoes] = useState<Medicao[]>([]);
@@ -57,6 +59,8 @@ export default function Painel() {
 
   return (
     <div className="space-y-6">
+      {usuario?.nome && <p className="text-lg font-medium">Olá, {usuario.nome}</p>}
+
       <Cartao titulo="Nova medição">
         <FormMedicao aoSalvar={registrar} />
       </Cartao>

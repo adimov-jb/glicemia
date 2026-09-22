@@ -2,11 +2,18 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import delete
 
 from app.deps import DbSessao, UsuarioAtual
-from app.models import Medicao
-from app.schemas import TrocaSenhaEntrada
+from app.models import Medicao, Usuario
+from app.schemas import NomeEntrada, TrocaSenhaEntrada, UsuarioSaida
 from app.security import gerar_hash_senha, verificar_senha
 
 router = APIRouter(prefix="/api/conta", tags=["conta"])
+
+
+@router.put("/nome", response_model=UsuarioSaida)
+def alterar_nome(dados: NomeEntrada, usuario: UsuarioAtual, db: DbSessao) -> Usuario:
+    usuario.nome = dados.nome
+    db.commit()
+    return usuario
 
 
 @router.post("/trocar-senha", status_code=status.HTTP_204_NO_CONTENT)

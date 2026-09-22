@@ -67,6 +67,8 @@ export const api = {
   estatisticas: (dias: number) => requisicao<Estatisticas>(`/estatisticas?dias=${dias}`),
   urlCsv: (dias: number | null) => `/api/exportar/csv${dias ? `?dias=${dias}` : ""}`,
 
+  alterarNome: (nome: string) =>
+    requisicao<Usuario>("/conta/nome", { method: "PUT", body: json({ nome }) }),
   trocarSenha: (senhaAtual: string, senhaNova: string) =>
     requisicao<void>("/conta/trocar-senha", {
       method: "POST",
